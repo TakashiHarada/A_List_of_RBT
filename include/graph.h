@@ -105,17 +105,17 @@ matrix* permute_matrix2(matrix* M, unsigned* sigma) {
   return N;
 }
 
-void permute_matrix(matrix* M, unsigned* sigma) {
-  unsigned i, j;
-  char tmp;
-  for (j = 0; j < M->n; ++j)
-    for (i = 0; i < M->m; ++i) {
-      /* tmp = M->b[i][sigma[j]]; */
-      /* M->b[i][sigma[j]] = M->b[i][j]; */
-      /* M->b[i][j] = tmp; */
-      ;
-    }
-}
+/* void permute_matrix(matrix* M, unsigned* sigma) { */
+/*   unsigned i, j; */
+/*   /\* char tmp; *\/ */
+/*   for (j = 0; j < M->n; ++j) */
+/*     for (i = 0; i < M->m; ++i) { */
+/*       /\* tmp = M->b[i][sigma[j]]; *\/ */
+/*       /\* M->b[i][sigma[j]] = M->b[i][j]; *\/ */
+/*       /\* M->b[i][j] = tmp; *\/ */
+/*       ; */
+/*     } */
+/* } */
 
 set_unsigned** c1p_matrix_to_clique(matrix* M) {
   set_unsigned** clique = (set_unsigned**)calloc(M->n, sizeof(set_unsigned*));

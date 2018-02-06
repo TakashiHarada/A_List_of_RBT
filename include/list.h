@@ -265,7 +265,7 @@ typedef struct LIST_STRING list_string;
 
 void list_string_remove_head(list_string*);
 char* list_string_head(list_string*);
-bool list_string_is_empty(list_string* L);
+bool list_string_is_empty(list_string*);
 list_string_cell* list_string_search(list_string*, char*);
 void list_string_insert(list_string*, char*);
 void list_string_insert_sub(list_string*, list_string_cell*);
@@ -324,6 +324,8 @@ void list_string_delete_sub(list_string* L, list_string_cell* x) {
   else { L->head = x->next; }
   if (NULL != x->next) { x->next->prev = x->prev; }
   else { L->last = x->prev; }
+  free(x->key);
+  free(x);
 }
 
 void list_strings_concat(list_string* L1, list_string* L2) {

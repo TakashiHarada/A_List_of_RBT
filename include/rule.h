@@ -22,9 +22,151 @@
 #include "tools.h"
 #endif
 
-#define HEADER_LENGTH 104
+/************************* Arbitraly Mask Rule **************************/
+struct RULE {
+  unsigned num;
+  char* cond;
+};
+typedef struct RULE rule;
+
+struct LIST_RULE_CELL {
+  rule* key;
+  struct LIST_RULE_CELL* prev;
+  struct LIST_RULE_CELL* next;
+};
+typedef struct LIST_RULE_CELL list_rule_cell;
+
+struct LIST_RULE {
+  list_rule_cell* head;
+  list_rule_cell* last;
+  unsigned size;
+};
+typedef struct LIST_RULE list_rule;
+
+rule* list_rule_head(list_rule*);
+bool list_rule_is_empty(list_rule*);
+list_rule_cell* list_rule_search(list_rule*, rule*);
+void list_rule_insert(list_rule*, rule*);
+void list_rule_insert_sub(list_rule*, list_rule_cell*);
+void list_rule_delete(list_rule*, rule*);
+void list_rule_delete_sub(list_rule*, list_rule_cell*);
+void list_rules_concat(list_rule*, list_rule*);
+void list_rule_clear(list_rule*);
+void list_rule_print(list_rule*);
+
+list_rule* read_rule_list(char*);
+
+
+rule* list_rule_head(list_rule* L) {
+  list_rule_cell* h = L->head;
+  rule* r = (rule*)malloc(sizeof(rule));
+  r->num = h->key->num;
+  const unsigned l = strlen(h->key->cond);
+  r->cond = (char*)malloc((l+1)*sizeof(char));
+  strcpy(r->cond, h->key->cond);
+  return r;
+}
+
+bool list_rule_is_empty(list_rule* L) { return (0 == L->size); }
+
+list_rule_cell* list_rule_search(list_rule* L, rule* r) {
+  list_rule_cell* x = L->head;
+  while (NULL != x && x->key->num == r->num && strcmp(x->key->cond, r->cond)) { x = x->next; }
+  return x;
+}
+
+void list_rule_insert(list_rule* L, rule* r) {
+  list_rule_cell* new = (list_rule_cell*)malloc(sizeof(list_rule_cell));
+  L->size = L->size + 1;
+  const unsigned l = strlen(r->cond);
+  new->key = (rule*)malloc(sizeof(rule));
+  new->key->cond = (char*)malloc((l+1)*sizeof(char));
+  strcpy(new->key->cond, r->cond);
+  new->key->num = r->num;
+  list_rule_insert_sub(L, new);
+}
+
+void list_rule_insert_sub(list_rule* L, list_rule_cell* x) {
+  x->next = L->head;
+  if (NULL != L->head) { L->head->prev = x; }
+  else { L->last = x; }
+  L->head = x;
+  x->prev = NULL;
+}
+
+void list_rule_delete(list_rule* L, rule* r) {
+  list_rule_cell* x = list_rule_search(L, r);
+  if (NULL != x) { list_rule_delete_sub(L, x); }
+}
+
+void list_rule_delete_sub(list_rule* L, list_rule_cell* x) {
+  L->size = L->size - 1;
+  if (NULL != x->prev) { x->prev->next = x->next; }
+  else { L->head = x->next; }
+  if (NULL != x->next) { x->next->prev = x->prev; }
+  else { L->last = x->prev; }
+  free(x->key->cond);
+  free(x->key);
+  free(x);
+}
+
+void list_rules_concat(list_rule* L1, list_rule* L2) {
+  if (NULL == L1 || NULL == L1->head) { L1 = L2; return ; }
+  L1->last->next = L2->head;
+  if (NULL != L2 && NULL != L2->head) { L2->head->prev = L1->last; }
+  L1->size = L1->size + L2->size;
+}
+
+void list_rule_clear(list_rule* L) {
+  if (NULL == L) { return ; }
+  list_rule_cell* p, *q;
+  for (p = L->head; NULL != p; ) {
+    q = p;
+    p = p->next;
+    free(q->key->cond);
+    free(q->key);
+    free(q);
+  }
+}
+
+void list_rule_print(list_rule* L) {
+  list_rule_cell* p = L->head;
+  const unsigned d = floor(log10(L->size)) + 1;
+  if (NULL != p)
+    for (p = p->next; NULL != p; p = p->next) 
+      printf("r[%*d] : %s", d, p->key->num, p->key->cond);
+}
+
+list_rule* read_rule_list(char* rule_file_name) {
+  FILE *fp;
+  if (NULL == (fp = fopen(rule_file_name, "r"))) {
+    fprintf(stderr, "ERROR: can't open the rule file.\n");
+    exit(1);
+  }
+
+  list_rule* rulelist = (list_rule*)malloc(sizeof(list_rule));
+
+  char* line = NULL;
+  size_t len = 0;
+  ssize_t read;
+  unsigned i;
+  
+  for (i = 1; -1 != (read = getline(&line, &len, fp)); ++i) {
+    rule* r = (rule*)malloc(sizeof(rule));
+    r->num = i;
+    r->cond = (char*)malloc(strlen(line)*sizeof(char));
+    strcpy(r->cond, line);
+    r->cond[strlen(line)] = '\0';
+    list_rule_insert(rulelist, r);
+  }
+  fclose(fp);
+  
+  return rulelist;
+}
 
 /*************************** Class Bench Rule ***************************/
+#define HEADER_LENGTH 104
+
 struct C_RULE {
   unsigned num;
   char* sa;
