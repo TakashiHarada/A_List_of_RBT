@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #ifndef __TANAKALAB_RULE_H__
 #define __TANAKALAB_RULE_H__
@@ -46,13 +47,25 @@ struct C_HEADERLIST {
 };
 typedef struct C_HEADERLIST c_headerlist;
 
+void c_rulelist_print(c_rulelist*);
 c_rulelist* read_class_bench_rule_list(char*);
-void free_class_bench_rule_list(c_rule*);
+void free_class_bench_rule_list(c_rulelist*);
 
 /* char** read_header_list(char*); */
 
 /* void free_header_list(char**); */
 
+void c_rulelist_print(c_rulelist* rulelist) {
+  unsigned i, j;
+  unsigned d = floor(log10(rulelist->n)) + 1;
+  for (i = 0; i < rulelist->n; ++i) {
+    printf("R[%*d] : SA   = %s\n", d, rulelist->r[i].num, rulelist->r[i].sa) ;
+    for (j = 0; j < d+6; ++j) { putchar(' '); } printf("DA   = %s\n", rulelist->r[i].da); 
+    for (j = 0; j < d+6; ++j) { putchar(' '); } printf("SP   = "); list_string_print(rulelist->r[i].sp); putchar('\n');
+    for (j = 0; j < d+6; ++j) { putchar(' '); } printf("DP   = "); list_string_print(rulelist->r[i].dp); putchar('\n');
+    for (j = 0; j < d+6; ++j) { putchar(' '); } printf("PROT = %s\n", rulelist->r[i].prot);
+  }
+}
 
 c_rulelist* read_class_bench_rule_list(char* rule_file_name) {
   FILE *fp;
@@ -81,6 +94,7 @@ c_rulelist* read_class_bench_rule_list(char* rule_file_name) {
   rewind(fp);
   for (i = 0; EOF != fscanf(fp,"%s %s %u-%u %u-%u %s",SA,DA,&SPL,&SPH,&DPL,&DPH,PROT); ++i) {
     /* printf("%s %s %u : %u %u : %u %s\n", SA, DA, SPL, SPH, DPL, DPH, PROT); */
+    rs[i].num = i+1;
     rs[i].sa = (char*)malloc(33*sizeof(char));
     rs[i].da = (char*)malloc(33*sizeof(char));
     rs[i].prot = (char*)malloc(9*sizeof(char));
@@ -99,14 +113,14 @@ c_rulelist* read_class_bench_rule_list(char* rule_file_name) {
 
 void free_class_bench_rule_list(c_rulelist* rulelist) {
   unsigned i;
-  for (i = 0; i < n; ++i) {
+  for (i = 0; i < rulelist->n; ++i) {
     free(rulelist->r[i].sa);
     free(rulelist->r[i].da);
     free(rulelist->r[i].prot);
     list_string_clear(rulelist->r[i].sp);
     list_string_clear(rulelist->r[i].dp);
   }
-  free(rulelist);
+  free(rulelist->r);
 }
 
 /* char** read_header_list(char* header_file_name) { */
