@@ -29,6 +29,15 @@ struct RULE {
 };
 typedef struct RULE rule;
 
+bool rule_eq(rule*, rule*);
+void rule_print(rule*);
+  
+bool rule_eq(rule* r1, rule* r2) {
+  return (r1->num == r2->num && !strcmp(r1->cond, r2->cond));
+}
+
+void rule_print(rule* r) { printf("r[%d] = %s", r->num, r->cond); }
+
 struct LIST_RULE_CELL {
   rule* key;
   struct LIST_RULE_CELL* prev;
@@ -44,6 +53,7 @@ struct LIST_RULE {
 typedef struct LIST_RULE list_rule;
 
 rule* list_rule_head(list_rule*);
+bool list_rule_eq(list_rule*, list_rule*);
 bool list_rule_is_empty(list_rule*);
 list_rule_cell* list_rule_search(list_rule*, rule*);
 void list_rule_insert(list_rule*, rule*);
@@ -53,6 +63,7 @@ void list_rule_delete_sub(list_rule*, list_rule_cell*);
 void list_rules_concat(list_rule*, list_rule*);
 void list_rule_clear(list_rule*);
 void list_rule_print(list_rule*);
+list_rule* list_rule_copy(list_rule*);
 
 list_rule* read_rule_list(char*);
 
@@ -65,6 +76,14 @@ rule* list_rule_head(list_rule* L) {
   r->cond = (char*)malloc((l+1)*sizeof(char));
   strcpy(r->cond, h->key->cond);
   return r;
+}
+
+bool list_rule_eq(list_rule* L1, list_rule* L2) {
+  if (L1->size != L2->size) { return false; }
+  list_rule_cell *p1, *p2;
+  for (p1 = L1->head, p2 = L2->head; NULL != p1; p1 = p1->next, p2 = p2->next)
+    if (!rule_eq(p1->key, p2->key)) { return false; }
+  return true;
 }
 
 bool list_rule_is_empty(list_rule* L) { return (0 == L->size); }
@@ -127,14 +146,23 @@ void list_rule_clear(list_rule* L) {
     free(q->key);
     free(q);
   }
+  L->size = 0;
+  L = NULL;
 }
 
 void list_rule_print(list_rule* L) {
-  list_rule_cell* p = L->head;
+  list_rule_cell* p;
   const unsigned d = floor(log10(L->size)) + 1;
-  if (NULL != p)
-    for (p = p->next; NULL != p; p = p->next) 
-      printf("r[%*d] : %s", d, p->key->num, p->key->cond);
+  for (p = L->head; NULL != p; p = p->next) 
+    printf("r[%*d] : %s", d, p->key->num, p->key->cond);
+}
+
+list_rule* list_rule_copy(list_rule* L) {
+  list_rule* L2 = (list_rule*)malloc(sizeof(list_rule));
+  list_rule_cell* p;
+  for (p = L->last; NULL != p; p = p->prev)
+    list_rule_insert(L2, p->key);
+  return L2;
 }
 
 list_rule* read_rule_list(char* rule_file_name) {
@@ -162,6 +190,104 @@ list_rule* read_rule_list(char* rule_file_name) {
   fclose(fp);
   
   return rulelist;
+}
+
+
+/************************* list of Rule List **************************/
+struct LIST_RULELIST_CELL {
+  list_rule* key;
+  struct LIST_RULELIST_CELL* prev;
+  struct LIST_RULELIST_CELL* next;
+};
+typedef struct LIST_RULELIST_CELL list_rulelist_cell;
+
+struct LIST_RULELIST {
+  list_rulelist_cell* head;
+  list_rulelist_cell* last;
+  unsigned size;
+};
+typedef struct LIST_RULELIST list_rulelist;
+
+list_rule* list_rulelist_head(list_rulelist*);
+bool list_rulelist_is_empty(list_rulelist*);
+list_rulelist_cell* list_rulelist_search(list_rulelist*, list_rule*);
+void list_rulelist_insert(list_rulelist*, list_rule*);
+void list_rulelist_insert_sub(list_rulelist*, list_rulelist_cell*);
+void list_rulelist_delete(list_rulelist*, list_rule*);
+void list_rulelist_delete_sub(list_rulelist*, list_rulelist_cell*);
+void list_rulelists_concat(list_rulelist*, list_rulelist*);
+void list_rulelist_clear(list_rulelist*);
+void list_rulelist_print(list_rulelist*);
+
+
+list_rule* list_rulelist_head(list_rulelist* LL) {
+  list_rulelist_cell* h = LL->head;
+  list_rule* L = list_rule_copy(h->key);
+  return L;
+}
+
+bool list_rulelist_is_empty(list_rulelist* L) { return (0 == L->size); }
+
+list_rulelist_cell* list_rulelist_search(list_rulelist* LL, list_rule* L) {
+  list_rulelist_cell* x = LL->head;
+  while (NULL != x && !list_rule_eq(L, x->key)) { x = x->next; }
+  return x;
+}
+
+void list_rulelist_insert(list_rulelist* LL, list_rule* L) {
+  LL->size = LL->size + 1;
+  list_rulelist_cell* new = (list_rulelist_cell*)malloc(sizeof(list_rulelist_cell));
+  new->key = list_rule_copy(L);
+  list_rulelist_insert_sub(LL, new);
+}
+
+void list_rulelist_insert_sub(list_rulelist* L, list_rulelist_cell* x) {
+  x->next = L->head;
+  if (NULL != L->head) { L->head->prev = x; }
+  else { L->last = x; }
+  L->head = x;
+  x->prev = NULL;
+}
+
+void list_rulelist_delete(list_rulelist* LL, list_rule* L) {
+  list_rulelist_cell* x = list_rulelist_search(LL, L);
+  if (NULL != x) { list_rulelist_delete_sub(LL, x); }
+}
+
+void list_rulelist_delete_sub(list_rulelist* L, list_rulelist_cell* x) {
+  L->size = L->size - 1;
+  if (NULL != x->prev) { x->prev->next = x->next; }
+  else { L->head = x->next; }
+  if (NULL != x->next) { x->next->prev = x->prev; }
+  else { L->last = x->prev; }
+  list_rule_clear(x->key);
+  free(x);
+}
+
+void list_rulelists_concat(list_rulelist* L1, list_rulelist* L2) {
+  if (NULL == L1 || NULL == L1->head) { L1 = L2; return ; }
+  L1->last->next = L2->head;
+  if (NULL != L2 && NULL != L2->head) { L2->head->prev = L1->last; }
+  L1->size = L1->size + L2->size;
+}
+
+void list_rulelist_clear(list_rulelist* L) {
+  if (NULL == L) { return ; }
+  list_rulelist_cell* p, *q;
+  for (p = L->head; NULL != p; ) {
+    q = p;
+    p = p->next;
+    list_rule_clear(q->key);
+    free(q);
+  }
+}
+
+void list_rulelist_print(list_rulelist* L) {
+  list_rulelist_cell* p = L->head;
+  list_rule_print(p->key); putchar('\n');
+  for (p = p->next; NULL != p; p = p->next) {
+    list_rule_print(p->key); putchar('\n');
+  }
 }
 
 /*************************** Class Bench Rule ***************************/
