@@ -175,16 +175,16 @@ unsigned* lbfs(graph G) {
   return sigma;
 }
 
-void sort(list_unsigned* al, unsigned* tau) {
-  unsigned i, n = al->size;
-  unsigned* array = calloc(n, sizeof(array));
-  list_unsigned_cell* p;
-  for (p = al->head, i = 0; i < n; p = p->next, ++i) { array[i] = p->key; }
-  /* for (i = 0; i < n; ++i) { printf("%d, ", array[i]); } */
-  /* putchar('\n'); */
+/* void sort(list_unsigned* al, unsigned* tau) { */
+/*   unsigned i, n = al->size; */
+/*   unsigned* array = calloc(n, sizeof(array)); */
+/*   list_unsigned_cell* p; */
+/*   for (p = al->head, i = 0; i < n; p = p->next, ++i) { array[i] = p->key; } */
+/*   /\* for (i = 0; i < n; ++i) { printf("%d, ", array[i]); } *\/ */
+/*   /\* putchar('\n'); *\/ */
   
-  free(array);
-}
+/*   free(array); */
+/* } */
 
 unsigned* lbfs_plus(graph G, unsigned* tau) {
   /**************************************** preparation process ****************************************/
@@ -345,17 +345,18 @@ set_unsigned* getL(graph G, unsigned* sigma, const unsigned k, const unsigned w)
   /*   set_unsigned_init(Empty); */
   /*   return Empty; */
   /* } */
-  const unsigned n = G.size;
+
+  /* const unsigned n = G.size; */
   set_unsigned* N = (set_unsigned*)calloc(1, sizeof(set_unsigned));
   set_unsigned_init(N);
-  set_insert_unsigned(N, w);
+  set_unsigned_insert(N, w);
   list_unsigned_cell* p;
-  for (p = G.al[w]->head; NULL != p; p = p->next) { set_insert_unsigned(N, p->key); }
+  for (p = G.al[w]->head; NULL != p; p = p->next) { set_unsigned_insert(N, p->key); }
   
   set_unsigned* S = (set_unsigned*)calloc(1, sizeof(set_unsigned));
   set_unsigned_init(S);
   unsigned i;
-  for (i = 0; i <= k; ++i) { set_insert_unsigned(S, sigma[i]); }
+  for (i = 0; i <= k; ++i) { set_unsigned_insert(S, sigma[i]); }
 
   set_unsigned* L = set_unsigned_intersect(N, S);
 
@@ -375,8 +376,8 @@ set_unsigned* getS(const unsigned n, char** label, bool* unvisited) {
       else if (strcmp(s, label[i]) < 0) { s = label[i]; }
     }
   }
-  if (NULL != s) { for (i = 0; i < n; ++i) { if (unvisited[i] && NULL != label[i] && 0 == strcmp(s, label[i])) { set_insert_unsigned(S, i); } } }
-  else { for (i = 0; i < n; ++i) if (unvisited[i]) { set_insert_unsigned(S, i); } }
+  if (NULL != s) { for (i = 0; i < n; ++i) { if (unvisited[i] && NULL != label[i] && 0 == strcmp(s, label[i])) { set_unsigned_insert(S, i); } } }
+  else { for (i = 0; i < n; ++i) if (unvisited[i]) { set_unsigned_insert(S, i); } }
   return S;
 }
 
@@ -384,7 +385,7 @@ set_unsigned* get_rho_i(const unsigned i, const unsigned* rho) {
   set_unsigned* rho_i = (set_unsigned*)calloc(1, sizeof(set_unsigned));
   set_unsigned_init(rho_i);
   unsigned k;
-  for (k = 0; k <= i; ++k) { set_insert_unsigned(rho_i, rho[k]); }
+  for (k = 0; k <= i; ++k) { set_unsigned_insert(rho_i, rho[k]); }
   return rho_i;
 }
 
@@ -392,7 +393,7 @@ unsigned* lbfs_star(graph G, unsigned* sigma) {
   /**************************************** preparation process ****************************************/
   const unsigned n = G.size;
   unsigned* sigma_i = get_inverse(sigma, n);
-  unsigned l;
+  /* unsigned l; */
 
   unsigned* rho = (unsigned*)calloc(n, sizeof(unsigned));
   char** label = (char**)calloc(n, sizeof(char*));
@@ -411,7 +412,7 @@ unsigned* lbfs_star(graph G, unsigned* sigma) {
 
   /******************************************** main process ********************************************/
   list_unsigned_cell* p;
-  unsigned_node* s;
+  /* unsigned_node* s; */
   set_unsigned *S = NULL, *diff = NULL, *Rho = NULL;
   unsigned u, w = 0, alpha, beta;
   for (i = 0; i < n; ++i) {
@@ -513,9 +514,9 @@ bool is_I_ordering(unsigned* sigma, graph G) {
 }
 
 Ordering Four_Sweep_LBFS(graph G) {
-  const unsigned n = G.size;
-  const unsigned d = floor(log10(n)) + 1;
-  unsigned i;
+  /* const unsigned n = G.size; */
+  /* const unsigned d = floor(log10(n)) + 1; */
+  /* unsigned i; */
   unsigned* delta = lbfs(G);
   /* unsigned* delta = (unsigned*)calloc(n, sizeof(unsigned)); */
   /* delta[0] = 0; */
@@ -567,9 +568,9 @@ Ordering Four_Sweep_LBFS(graph G) {
 }
 
 unsigned* Four_Sweep_LBFS2(graph G) {
-  const unsigned n = G.size;
-  const unsigned d = floor(log10(n)) + 1;
-  unsigned i;
+  /* const unsigned n = G.size; */
+  /* const unsigned d = floor(log10(n)) + 1; */
+  /* unsigned i; */
 
   unsigned* delta = lbfs(G);
   /* printf("LexBFS  ordering : %*d", d, delta[0]); */
