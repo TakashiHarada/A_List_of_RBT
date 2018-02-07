@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #ifndef __TANAKALAB_GRAPH_H__
 #define __TANAKALAB_GRAPH_H__

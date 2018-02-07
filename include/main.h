@@ -3,7 +3,8 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
-#include <set.h>
-#include <list.h>
-#include <graph.h>
-#include <c1p.h>
+#include "set.h"
+#include "list.h"
+#include "graph.h"
+#include "c1p.h"
+#include "partition.h"

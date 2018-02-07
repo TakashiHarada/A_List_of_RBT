@@ -1,9 +1,9 @@
 VPATH = src include
 CFLAGS = -I include
-CC = gcc -g3 -Wall -Wextra
+CC = /usr/local/bin/gcc-7 -g3 -Wall -Wextra
 
-main: main.o
-	gcc -g3 -Wall -Wextra main.o -o filter
+main: partition.o main.o
+	cc -g3 -Wall -Wextra main.o partition.o -o filter
 
 clean:
 	rm -rf *.o *.dSYM
