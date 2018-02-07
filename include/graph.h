@@ -8,9 +8,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#ifndef __TANAKALAB_GRAPH_H__
-#define __TANAKALAB_GRAPH_H__
-
 #ifndef __TANAKALAB_LIST_H__
 #include "list.h"
 #endif
@@ -18,6 +15,10 @@
 #ifndef __TANAKALAB_SET_H__
 #include "set.h"
 #endif
+
+#ifndef __TANAKALAB_GRAPH_H__
+#define __TANAKALAB_GRAPH_H__
+
 
 struct MATRIX {
   unsigned m;
@@ -31,6 +32,13 @@ struct GRAPH {
   list_unsigned** al; /* adjacency list representing edges */
 };
 typedef struct GRAPH graph;
+
+void matrix_clear(matrix* M) {
+  unsigned i;
+  for (i = 0; i < M->m; ++i)
+    free(M->b[i]);
+  free(M);
+}
 
 void print_graph(graph G) {
   const unsigned d = floor(log10(G.size)) + 1;

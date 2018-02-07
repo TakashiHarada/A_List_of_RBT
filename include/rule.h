@@ -46,6 +46,7 @@ struct LIST_RULE_CELL {
 typedef struct LIST_RULE_CELL list_rule_cell;
 
 struct LIST_RULE {
+  unsigned* sigma; /* order of column */
   list_rule_cell* head;
   list_rule_cell* last;
   unsigned size;
@@ -63,6 +64,7 @@ void list_rule_delete_sub(list_rule*, list_rule_cell*);
 void list_rules_concat(list_rule*, list_rule*);
 void list_rule_clear(list_rule*);
 void list_rule_print(list_rule*);
+void list_rule_print2(list_rule*);
 list_rule* list_rule_copy(list_rule*);
 
 list_rule* read_rule_list(char*);
@@ -146,6 +148,7 @@ void list_rule_clear(list_rule* L) {
     free(q->key);
     free(q);
   }
+  if (NULL != L->sigma) { free(L->sigma); }
   L->size = 0;
   L = NULL;
 }
@@ -155,6 +158,21 @@ void list_rule_print(list_rule* L) {
   const unsigned d = floor(log10(L->size)) + 1;
   for (p = L->head; NULL != p; p = p->next) 
     printf("r[%*d] : %s", d, p->key->num, p->key->cond);
+}
+
+void list_rule_print2(list_rule* L) {
+  list_rule_cell* p = L->head;
+  const unsigned d = floor(log10(L->size)) + 1;
+  const unsigned n = strlen(p->key->cond)-1;
+  char* rule = (char*)malloc(n*sizeof(char));
+  for ( ; NULL != p; p = p->next) { 
+    printf("r[%*d] : ", d, p->key->num);
+    unsigned i;
+    for (i = 0; i < n; ++i) { rule[L->sigma[i]] = p->key->cond[i]; }
+    rule[n] = '\0';
+    printf("%s\n", rule);
+  }
+  free(rule);
 }
 
 list_rule* list_rule_copy(list_rule* L) {

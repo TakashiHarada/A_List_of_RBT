@@ -1,8 +1,5 @@
 /* set.h */
 
-#ifndef __TANAKALAB_SET_H__
-#define __TANAKALAB_SET_H__
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,6 +7,9 @@
 #ifndef __TANAKALAB_BOOL_H__
 #include "bool.h"
 #endif
+
+#ifndef __TANAKALAB_SET_H__
+#define __TANAKALAB_SET_H__
 
 typedef enum { red, black } color;
 
