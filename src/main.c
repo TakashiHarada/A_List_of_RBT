@@ -5,13 +5,23 @@ int main(int argc, char** argv) {
     fprintf(stderr, "ERROR!!\nUsage: $ ./filter [-c] <rule list> <header list>\n");
     exit(1);
   }
-  /* list_rulelist* RL = (list_rulelist*)malloc(sizeof(list_rulelist)); */
+
+  headerlist* H = read_header_list(argv[2]);
+  header_list_print(H); putchar('\n');
+
+  /* free_header_list(H); */
 
   list_rule* rulelist = read_rule_list(argv[1]);
 
   list_rulelist* RR = list_rule_to_list_rulelist(rulelist);
   list_rulelist_print2(RR);
+
+  /* srbt** s1 = mk_srbt(RR->head->key); */
+  /* srbts_print(s1, 120); */
+  /* free_srbts(s1, 120); */
+  
   list_rulelist_clear(RR);
+  
   /* if (list_rule_isC1P(rulelist)) { printf("isC1P\n"); } */
   
   /* list_rule_print(rulelist);   putchar('\n'); */

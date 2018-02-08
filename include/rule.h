@@ -1,6 +1,4 @@
-/* rule.h 
- *
- */
+/* rule.h */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -181,12 +179,13 @@ void list_rule_print2(list_rule* L) {
   const unsigned d = floor(log10(L->size)) + 1;
   const unsigned n = strlen(p->key->cond)-1;
   char* rule = (char*)malloc(n*sizeof(char));
+
   for ( ; NULL != p; p = p->next) { 
-    printf("r[%*d] : ", d, p->key->num);
+    /* printf("r[%*d] : ", d, p->key->num); */
     unsigned i;
     for (i = 0; i < n; ++i) { rule[L->sigma[i]] = p->key->cond[i]; }
-    rule[n] = '\0';
-    printf("%s\n", rule);
+    /* rule[n] = '\0'; */
+    printf("%s : r[%d]\n", rule, p->key->num);
   }
   free(rule);
 }
@@ -341,7 +340,6 @@ void list_rulelist_print2(list_rulelist* L) {
 }
 
 /*************************** Class Bench Rule ***************************/
-#define HEADER_LENGTH 104
 
 struct C_RULE {
   unsigned num;
@@ -359,19 +357,10 @@ struct C_RULELIST {
 };
 typedef struct C_RULELIST c_rulelist;
 
-struct C_HEADERLIST {
-  unsigned n;
-  char** h;
-};
-typedef struct C_HEADERLIST c_headerlist;
 
 void c_rulelist_print(c_rulelist*);
 c_rulelist* read_class_bench_rule_list(char*);
 void free_class_bench_rule_list(c_rulelist*);
-
-/* char** read_header_list(char*); */
-
-/* void free_header_list(char**); */
 
 void c_rulelist_print(c_rulelist* rulelist) {
   unsigned i, j;
@@ -440,49 +429,5 @@ void free_class_bench_rule_list(c_rulelist* rulelist) {
   }
   free(rulelist->r);
 }
-
-/* char** read_header_list(char* header_file_name) { */
-/*   FILE *fp; */
-/*   if (NULL == (fp = fopen(header_file_name, "r"))) { */
-/*     fprintf(stderr, "ERROR: can't open the header file.\n"); */
-/*     exit(1); */
-/*   } */
-
-/*   unsigned hn = 0; */
-/*   { /\* count the number of rules *\/ */
-/*     char* line = NULL; */
-/*     size_t len = 0; */
-/*     ssize_t read; */
-/*     while (-1 != (read = getline(&line, &len, fp))) ++hn; */
-/*   } */
-
-/*   char** headerlist = (char**)malloc(hn*sizeof(char*)); */
-/*   unsigned i; */
-/*   rewind(fp); */
-  
-/*   char SA[33], DA[33], SP[17], DP[17], PROT[9]; */
-/*   for (i = 0; EOF != fscanf(fp,"%s %s %s %s %s",SA,DA,SP,DP,PROT); ++i) { */
-/*     headerlist[i] = (char*)malloc((HEADER_LENGTH+1)*sizeof(char)); */
-/*     unsigned j; */
-/*     for (j = 0; j < 32; ++j) { */
-/*       headerlist[i][31-j] = SA[j]; /\* reverse the string of SA *\/ */
-/*       headerlist[i][32+j] = DA[j]; */
-/*     } */
-/*     for (j = 0; j < 16; ++j) { */
-/*       headerlist[i][64+j] = SP[j]; */
-/*       headerlist[i][80+j] = DP[j]; */
-/*     } */
-/*     for (j = 0; j < 8; ++j) { headerlist[i][96+j] = PROT[j]; } */
-/*   } */
-/*   fclose(fp); */
-  
-/*   return headerlist; */
-/* } */
-
-/* void free_header_list(char** headerlist) { */
-/*   unsigned i; */
-/*   for (i = 0; i < hn; ++i) { free(headerlist[i]); } */
-/*   free(headerlist); */
-/* } */
 
 #endif

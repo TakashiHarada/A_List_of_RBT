@@ -53,6 +53,10 @@ list_rulelist* list_rule_to_list_rulelist(list_rule* L) {
 void set_C1Porder_to_rulelist(list_rule* R) {
   matrix* M = rulelist_to_matrix(R);
   R->sigma = get_c1p_order(M);
+  /* print_matrix(M); */
+  unsigned i;
+  printf("%d", R->sigma[0]);
+  for (i = 1; i < M->n; ++i) { printf(", %d", R->sigma[i]); } putchar('\n');
   matrix_clear(M);
 }
 
@@ -63,6 +67,7 @@ matrix* rulelist_to_matrix(list_rule* L) {
   matrix* M = (matrix*)malloc(sizeof(matrix));
   M->m = m;
   M->n = n;
+  /* printf("M->m = %d, M->n = %d\n", m, n); */
   M->b = (char**)malloc(m*sizeof(char*));
   unsigned i, j;
   for (i = 0; i < m; ++i) { M->b[i] = (char*)malloc(n*sizeof(char)); }

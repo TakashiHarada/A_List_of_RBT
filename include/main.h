@@ -23,3 +23,11 @@
 #ifndef __TANAKALAB_PARTITION_H__
 #include "partition.h"
 #endif
+
+#ifndef __TANAKALAB_HEADER_H__
+#include "header.h"
+#endif
+
+#ifndef __TANAKALAB_SRBT_H__
+#include "srbt.h"
+#endif
