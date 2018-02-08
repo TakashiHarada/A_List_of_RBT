@@ -176,6 +176,7 @@ void list_rule_print(list_rule* L) {
 }
 
 void list_rule_print2(list_rule* L) {
+  if (NULL == L->sigma) { printf("error\n"); exit(1); }
   list_rule_cell* p = L->head;
   const unsigned d = floor(log10(L->size)) + 1;
   const unsigned n = strlen(p->key->cond)-1;
@@ -204,6 +205,7 @@ list_rule* mk_new_list_rule(rule* r) {
   R->head = R->last = NULL;
   rule* copy = rule_copy(r);
   list_rule_insert(R, copy);
+  R->sigma = NULL;
   return R;
 }
 
@@ -260,6 +262,7 @@ void list_rulelist_delete_sub(list_rulelist*, list_rulelist_cell*);
 void list_rulelists_concat(list_rulelist*, list_rulelist*);
 void list_rulelist_clear(list_rulelist*);
 void list_rulelist_print(list_rulelist*);
+void list_rulelist_print2(list_rulelist*);
 
 
 list_rule* list_rulelist_head(list_rulelist* LL) {
@@ -327,9 +330,14 @@ void list_rulelist_clear(list_rulelist* L) {
 void list_rulelist_print(list_rulelist* L) {
   list_rulelist_cell* p = L->head;
   list_rule_print(p->key); putchar('\n');
-  for (p = p->next; NULL != p; p = p->next) {
-    list_rule_print(p->key); putchar('\n');
-  }
+  for (p = p->next; NULL != p; p = p->next) { list_rule_print(p->key); putchar('\n'); }
+}
+
+void list_rulelist_print2(list_rulelist* L) {
+  list_rulelist_cell* p = L->head;
+  list_rule_print2(p->key); putchar('\n');
+  for (p = p->next; NULL != p; p = p->next) { list_rule_print2(p->key); putchar('\n'); }
+    
 }
 
 /*************************** Class Bench Rule ***************************/

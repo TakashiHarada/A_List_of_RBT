@@ -15,6 +15,7 @@
 list_rulelist* list_rule_to_list_rulelist(list_rule*);
 matrix* rulelist_to_matrix(list_rule*);
 bool list_rule_isC1P(list_rule*);
+void set_C1Porder_to_rulelist(list_rule*);
 
 list_rulelist* list_rule_to_list_rulelist(list_rule* L) {
   if (NULL == L || 0 == L->size) { return NULL; }
@@ -29,8 +30,9 @@ list_rulelist* list_rule_to_list_rulelist(list_rule* L) {
   list_rulelist_insert(LL, R);
   list_rule_clear(R);
 
+  /* partition */
+  list_rulelist_cell* q;
   for ( ; NULL != p; p = p->next) {
-    list_rulelist_cell* q;
     for (q = LL->last; NULL != q; q = q->prev) {
       list_rule_insert(q->key, p->key);
       if (list_rule_isC1P(q->key)) { break; }
@@ -41,8 +43,17 @@ list_rulelist* list_rule_to_list_rulelist(list_rule* L) {
       list_rulelist_insert(LL, S);
     }
   }
-  
+
+  /* set order */
+  for (q = LL->head; NULL != q; q = q->next) { set_C1Porder_to_rulelist(q->key); }
+       
   return LL;
+}
+
+void set_C1Porder_to_rulelist(list_rule* R) {
+  matrix* M = rulelist_to_matrix(R);
+  R->sigma = get_c1p_order(M);
+  matrix_clear(M);
 }
 
 matrix* rulelist_to_matrix(list_rule* L) {

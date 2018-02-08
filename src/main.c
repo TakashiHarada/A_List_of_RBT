@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
   list_rule* rulelist = read_rule_list(argv[1]);
 
   list_rulelist* RR = list_rule_to_list_rulelist(rulelist);
-  list_rulelist_print(RR);
+  list_rulelist_print2(RR);
   list_rulelist_clear(RR);
   /* if (list_rule_isC1P(rulelist)) { printf("isC1P\n"); } */
   
