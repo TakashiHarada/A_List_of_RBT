@@ -275,9 +275,9 @@ void list_strings_concat(list_string*, list_string*);
 void list_string_clear(list_string*);
 void list_string_print(list_string*);
 
-void list_string_remove_head(list_string* L) {
-  list_string_delete_sub(L, L->head);
-}
+
+
+void list_string_remove_head(list_string* L) { list_string_delete_sub(L, L->head); }
 
 char* list_string_head(list_string* L) {
   list_string_cell* h = L->head;

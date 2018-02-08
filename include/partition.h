@@ -12,9 +12,38 @@
 #include "rule.h"
 #endif
 
+list_rulelist* list_rule_to_list_rulelist(list_rule*);
 matrix* rulelist_to_matrix(list_rule*);
 bool list_rule_isC1P(list_rule*);
 
+list_rulelist* list_rule_to_list_rulelist(list_rule* L) {
+  if (NULL == L || 0 == L->size) { return NULL; }
+  list_rulelist* LL = (list_rulelist*)malloc(sizeof(list_rulelist));
+  if (L->size < 3) { list_rulelist_insert(LL, L); return LL; }
+
+  /* add the rul list containing the first and second rule of L to a list of rulelist LL */
+  list_rule_cell* p;
+  unsigned i;
+  list_rule* R = (list_rule*)malloc(sizeof(list_rule));
+  for (p = L->head, i = 0; i < 2; p = p->next, ++i) { list_rule_insert(R, p->key); }
+  list_rulelist_insert(LL, R);
+  list_rule_clear(R);
+
+  for ( ; NULL != p; p = p->next) {
+    list_rulelist_cell* q;
+    for (q = LL->last; NULL != q; q = q->prev) {
+      list_rule_insert(q->key, p->key);
+      if (list_rule_isC1P(q->key)) { break; }
+      list_rule_remove_head(q->key);
+    }
+    if (NULL == q) {
+      list_rule* S = mk_new_list_rule(p->key);
+      list_rulelist_insert(LL, S);
+    }
+  }
+  
+  return LL;
+}
 
 matrix* rulelist_to_matrix(list_rule* L) {
   list_rule_cell* p = L->head;
@@ -36,16 +65,16 @@ matrix* rulelist_to_matrix(list_rule* L) {
 
 bool list_rule_isC1P(list_rule* L) {
   matrix* M = rulelist_to_matrix(L);
-  L->sigma = get_c1p_order(M);
-  if (NULL != L->sigma) {
-    list_rule_print(L);
-    putchar('\n');
-    unsigned i;
-    printf("%d ", L->sigma[0]);
-    for (i = 1; i < M->n; ++i) printf(", %d", L->sigma[i]);
-    putchar('\n');
-    list_rule_print2(L);
-  }
+  /* L->sigma = get_c1p_order(M); */
+  /* if (NULL != L->sigma) { */
+    /* list_rule_print(L); */
+    /* putchar('\n'); */
+    /* unsigned i; */
+    /* printf("%d ", L->sigma[0]); */
+    /* for (i = 1; i < M->n; ++i) printf(", %d", L->sigma[i]); */
+    /* putchar('\n'); */
+    /* list_rule_print2(L); */
+  /* } */
   
   bool flag = is_c1p(M);
   matrix_clear(M);

@@ -31,12 +31,21 @@ typedef struct RULE rule;
 
 bool rule_eq(rule*, rule*);
 void rule_print(rule*);
-  
+rule* rule_copy(rule*);
+
 bool rule_eq(rule* r1, rule* r2) {
   return (r1->num == r2->num && !strcmp(r1->cond, r2->cond));
 }
 
 void rule_print(rule* r) { printf("r[%d] = %s", r->num, r->cond); }
+
+rule* rule_copy(rule* r) {
+  rule* copy = (rule*)malloc(sizeof(rule));
+  copy->num = r->num;
+  copy->cond = (char*)malloc(strlen(r->cond)*sizeof(char));
+  strcpy(copy->cond, r->cond);
+  return copy;
+}
 
 struct LIST_RULE_CELL {
   rule* key;
@@ -53,6 +62,7 @@ struct LIST_RULE {
 };
 typedef struct LIST_RULE list_rule;
 
+void list_rule_remove_head(list_rule*);
 rule* list_rule_head(list_rule*);
 bool list_rule_eq(list_rule*, list_rule*);
 bool list_rule_is_empty(list_rule*);
@@ -67,8 +77,12 @@ void list_rule_print(list_rule*);
 void list_rule_print2(list_rule*);
 list_rule* list_rule_copy(list_rule*);
 
+list_rule* mk_new_list_rule(rule*);
 list_rule* read_rule_list(char*);
 
+
+
+void list_rule_remove_head(list_rule* L) { list_rule_delete_sub(L, L->head); }
 
 rule* list_rule_head(list_rule* L) {
   list_rule_cell* h = L->head;
@@ -99,11 +113,12 @@ list_rule_cell* list_rule_search(list_rule* L, rule* r) {
 void list_rule_insert(list_rule* L, rule* r) {
   list_rule_cell* new = (list_rule_cell*)malloc(sizeof(list_rule_cell));
   L->size = L->size + 1;
-  const unsigned l = strlen(r->cond);
-  new->key = (rule*)malloc(sizeof(rule));
-  new->key->cond = (char*)malloc((l+1)*sizeof(char));
-  strcpy(new->key->cond, r->cond);
-  new->key->num = r->num;
+  /* const unsigned l = strlen(r->cond); */
+  /* new->key = (rule*)malloc(sizeof(rule)); */
+  /* new->key->cond = (char*)malloc((l+1)*sizeof(char)); */
+  /* strcpy(new->key->cond, r->cond); */
+  /* new->key->num = r->num; */
+  new->key = rule_copy(r);
   list_rule_insert_sub(L, new);
 }
 
@@ -176,11 +191,20 @@ void list_rule_print2(list_rule* L) {
 }
 
 list_rule* list_rule_copy(list_rule* L) {
-  list_rule* L2 = (list_rule*)malloc(sizeof(list_rule));
+  list_rule* L2 = (list_rule*)calloc(1,sizeof(list_rule));
   list_rule_cell* p;
   for (p = L->last; NULL != p; p = p->prev)
     list_rule_insert(L2, p->key);
+
   return L2;
+}
+
+list_rule* mk_new_list_rule(rule* r) {
+  list_rule* R = (list_rule*)malloc(sizeof(list_rule));
+  R->head = R->last = NULL;
+  rule* copy = rule_copy(r);
+  list_rule_insert(R, copy);
+  return R;
 }
 
 list_rule* read_rule_list(char* rule_file_name) {
