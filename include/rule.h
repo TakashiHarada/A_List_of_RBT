@@ -176,7 +176,7 @@ void list_rule_print(list_rule* L) {
 void list_rule_print2(list_rule* L) {
   if (NULL == L->sigma) { printf("error\n"); exit(1); }
   list_rule_cell* p = L->head;
-  const unsigned d = floor(log10(L->size)) + 1;
+  /* const unsigned d = floor(log10(L->size)) + 1; */
   const unsigned n = strlen(p->key->cond)-1;
   char* rule = (char*)malloc(n*sizeof(char));
 

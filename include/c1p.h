@@ -302,31 +302,20 @@ unsigned* get_c1p_order(matrix* M) {
   bool flag = is_I_ordering(sigma, *G);
 
   if (flag) {
-    unsigned* tau = remove_unit_portion(sigma, M->m, N->m);
     /* printf("sigma : %*d", 2, sigma[0]); */
     /* for (i = 1; i < N->m; ++i) { printf(", %*d", 2, sigma[i]); } putchar('\n'); */
     /* printf("tau   : %*d", 2, tau[0]); */
     /* for (i = 1; i < M->m; ++i) { printf(", %*d", 2, tau[i]); } putchar('\n'); */
 
-    set_unsigned** clique = c1p_matrix_to_clique(M);
-    /* for (i = 0; i < M->n; ++i) { printf("clique[%d] : ", i); set_show_unsigned(clique[i]); putchar('\n'); } */
-    /* printf("M->m = %d, M->n = %d\n", M->m, M->n); */
-
-    /* for (i = 0; i < (M->n)-1; ++i) { */
-    /*   for (j = i+1; j < M->n; ++j) { */
-    /* 	if (lt_clique(tau, M->n, clique[i], clique[j])) { printf("cc[%d] < cc[%d]\n", i, j); } */
-    /* 	else { printf("cc[%d] > cc[%d]\n", i, j); } */
-    /*   } */
-    /* } */
+    set_unsigned** clique = c1p_matrix_to_clique(N);
     
-    unsigned* cc = get_clique_chain(tau, M->m, clique, M->n);
+    unsigned* cc = get_clique_chain(sigma, N->m, clique, N->n);
     /* printf("clique chain : %d", cc[0]); for (i = 1; i < M->n; ++i) { printf(", %d", cc[i]); } putchar('\n'); */
 
-    c1p_order = (unsigned*)calloc(M->n, sizeof(unsigned));
-    for (i = 0; i < M->n; ++i) { c1p_order[cc[i]] = i; }
+    c1p_order = (unsigned*)calloc(N->n, sizeof(unsigned));
+    for (i = 0; i < N->n; ++i) { c1p_order[cc[i]] = i; }
 	
-    free(tau);
-    for (i = 0; i < M->n; ++i) { set_unsigned_clear(clique[i]); }
+    for (i = 0; i < N->n; ++i) { set_unsigned_clear(clique[i]); }
 
     free(cc);
     free(clique);
