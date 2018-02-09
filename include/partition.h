@@ -41,12 +41,12 @@ list_rulelist* list_rule_to_list_rulelist(list_rule* L) {
       if (list_rule_isC1P(q->key)) { break; }
       list_rule_remove_head(q->key);
     }
-    rule_print(p->key);
+    /* rule_print(p->key); */
     if (NULL == q) {
       list_rule* S = mk_new_list_rule(p->key);
       list_rulelist_insert(LL, S);
     }
-    rule_print(p->key);
+    /* rule_print(p->key); */
   }
 
   /* set order */
@@ -59,9 +59,9 @@ void set_C1Porder_to_rulelist(list_rule* R) {
   matrix* M = rulelist_to_matrix(R);
   R->sigma = get_c1p_order(M);
   /* print_matrix(M); */
-  unsigned i;
-  printf("%d", R->sigma[0]);
-  for (i = 1; i < M->n; ++i) { printf(", %d", R->sigma[i]); } putchar('\n');
+  /* unsigned i; */
+  /* printf("%d", R->sigma[0]); */
+  /* for (i = 1; i < M->n; ++i) { printf(", %d", R->sigma[i]); } putchar('\n'); */
   matrix_clear(M);
 }
 
