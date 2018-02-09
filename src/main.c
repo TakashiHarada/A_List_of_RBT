@@ -16,9 +16,9 @@ int main(int argc, char** argv) {
   list_rulelist* RR = list_rule_to_list_rulelist(rulelist);
   list_rulelist_print2(RR);
 
-  /* srbt** s1 = mk_srbt(RR->head->key); */
-  /* srbts_print(s1, 120); */
-  /* free_srbts(s1, 120); */
+  srbt** s1 = mk_srbt(RR->head->key);
+  srbts_print(s1, 120);
+  free_srbts(s1, 120);
   
   list_rulelist_clear(RR);
   
