@@ -7,23 +7,28 @@ int main(int argc, char** argv) {
   }
 
   headerlist* H = read_header_list(argv[2]);
-  header_list_print(H); putchar('\n');
+  /* header_list_print(H); putchar('\n'); */
 
-  /* free_header_list(H); */
+  list_rule* R = read_rule_list(argv[1]);
+  list_rule_print(R);
+  
+  do_linear_search(R, H);
 
-  list_rule* rulelist = read_rule_list(argv[1]);
-
-  list_rulelist* RR = list_rule_to_list_rulelist(rulelist);
-  list_rulelist_print2(RR);
-
-  srbt** s1 = mk_srbt(RR->head->key, rulelist->size);
+  
+  list_rulelist* RR = list_rule_to_list_rulelist(R);
+  /* list_rulelist_print(RR); */
+  /* list_rulelist_print2(RR); */
+  /* if (does_match_header(RR->head->key->head->key, H->h[0])) { printf("match !!\n"); } */
+  
+  srbt** s1 = mk_srbt(RR->head->key, R->size);
   srbts_print(s1, 120);
-  srbt** s2 = mk_srbt(RR->head->next->key, rulelist->size);
+  srbt** s2 = mk_srbt(RR->head->next->key, R->size);
   srbts_print(s2, 120);
   free_srbts(s1, 120);
   free_srbts(s2, 120);
   
   list_rulelist_clear(RR);
+
   
   /* if (list_rule_isC1P(rulelist)) { printf("isC1P\n"); } */
   
@@ -39,7 +44,9 @@ int main(int argc, char** argv) {
   /* if (list_rule_eq(rulelist, copy)) { printf("equal!\n"); } */
   /* else { printf("hoge\n"); } */
       
-  list_rule_clear(rulelist);
+  list_rule_clear(R);
+  free_header_list(H);
+  
   /* list_rulelist_clear(RL); */
   
   /* c_rulelist* c_rulelist = read_class_bench_rule_list(argv[1]); */

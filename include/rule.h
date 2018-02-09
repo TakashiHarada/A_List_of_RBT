@@ -20,6 +20,10 @@
 #include "tools.h"
 #endif
 
+#ifndef __TANAKALAB_HEADER_H__
+#include "header.h"
+#endif
+
 /************************* Arbitraly Mask Rule **************************/
 struct RULE {
   unsigned num;
@@ -30,12 +34,19 @@ typedef struct RULE rule;
 bool rule_eq(rule*, rule*);
 void rule_print(rule*);
 rule* rule_copy(rule*);
-
-bool rule_eq(rule* r1, rule* r2) {
-  return (r1->num == r2->num && !strcmp(r1->cond, r2->cond));
-}
-
+bool rule_eq(rule* r1, rule* r2) { return (r1->num == r2->num && !strcmp(r1->cond, r2->cond)); }
 void rule_print(rule* r) { printf("r[%d] = %s", r->num, r->cond); }
+
+bool does_match_header(rule*, header);
+
+bool does_match_header(rule* r, header h) {
+  /* printf("%d, r = %s\n", strlen(r->cond), r->cond); */
+  /* printf("%d, h = %s\n", strlen(h.string), h.string); */
+  const unsigned l = strlen(h.string)-1;
+  unsigned i;
+  for (i = 0; i < l; ++i) { if (r->cond[i] != '*' && r->cond[i] != h.string[i]) { return false; } }
+  return true;
+}
 
 rule* rule_copy(rule* r) {
   rule* copy = (rule*)malloc(sizeof(rule));
@@ -78,7 +89,19 @@ list_rule* list_rule_copy(list_rule*);
 list_rule* mk_new_list_rule(rule*);
 list_rule* read_rule_list(char*);
 
+unsigned linear_search(list_rule*, header);
+void do_linear_search(list_rule*, headerlist*);
 
+unsigned linear_search(list_rule* R, header h) {
+  list_rule_cell* p;
+  for (p = R->head; NULL != p; p = p->next) { if (does_match_header(p->key, h)) { return p->key->num; } }
+  return R->size + 1;
+}
+
+void do_linear_search(list_rule* R, headerlist* H) {
+  unsigned i;
+  for (i = 0; i < H->n; ++i) { printf("h[%d] = %s ---> %d\n", H->h[i].num, H->h[i].string, linear_search(R, H->h[i])); }
+}
 
 void list_rule_remove_head(list_rule* L) { list_rule_delete_sub(L, L->head); }
 
@@ -216,7 +239,7 @@ list_rule* read_rule_list(char* rule_file_name) {
     exit(1);
   }
 
-  list_rule* rulelist = (list_rule*)malloc(sizeof(list_rule));
+  list_rule* rulelist = (list_rule*)calloc(1,sizeof(list_rule));
 
   char* line = NULL;
   size_t len = 0;
@@ -224,9 +247,9 @@ list_rule* read_rule_list(char* rule_file_name) {
   unsigned i;
   
   for (i = 1; -1 != (read = getline(&line, &len, fp)); ++i) {
-    rule* r = (rule*)malloc(sizeof(rule));
+    rule* r = (rule*)calloc(1, sizeof(rule));
     r->num = i;
-    r->cond = (char*)malloc(strlen(line)*sizeof(char));
+    r->cond = (char*)calloc(strlen(line), sizeof(char));
     strcpy(r->cond, line);
     r->cond[strlen(line)] = '\0';
     list_rule_insert(rulelist, r);

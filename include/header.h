@@ -35,6 +35,7 @@ void header_list_print(headerlist* L) {
 void free_header_list(headerlist* L) {
   unsigned i = 0;
   while (i < L->n) {
+    /* printf("i = %d, L->size = %d\n", i, L->n); */
     free(L->h[i].string);
     ++i;
   }
@@ -65,13 +66,13 @@ headerlist* read_header_list(char* header_file_name) {
   /*   exit(1); */
   /* } */
 
-  headerlist* HL = (headerlist*)malloc(sizeof(headerlist));
+  headerlist* HL = (headerlist*)calloc(1, sizeof(headerlist));
   
   /* count a number of headers in the header list */
   unsigned n = 1; // already read the first line
   while (getline(&line, &len, fp) != -1) { ++n; }
   HL->n = n;
-  HL->h = (header*)malloc(n*sizeof(header));
+  HL->h = (header*)calloc(n, sizeof(header));
   
   /* read headers */
   rewind(fp);
