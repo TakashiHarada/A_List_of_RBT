@@ -99,6 +99,7 @@ unsigned linear_search(list_rule* R, header h) {
 }
 
 void do_linear_search(list_rule* R, headerlist* H) {
+  printf("==================== Linear Search ====================\n");
   unsigned i;
   for (i = 0; i < H->n; ++i) { printf("h[%d] = %s ---> %d\n", H->h[i].num, H->h[i].string, linear_search(R, H->h[i])); }
 }

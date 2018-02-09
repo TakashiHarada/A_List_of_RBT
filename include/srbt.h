@@ -7,6 +7,10 @@
 #include "rule.h"
 #endif
 
+#ifndef __TANAKALAB_HEADER_H__
+#include "header.h"
+#endif
+
 struct SRBT {
   int var;
   struct SRBT* left;
@@ -31,6 +35,41 @@ void srbts_print(srbt**, unsigned);
 void free_srbt_list(srbt***, unsigned, unsigned);
 void free_srbts(srbt**, unsigned);
 void free_srbt(unsigned, srbt*);
+
+void do_list_srbt_search(srbt***, unsigned, unsigned, headerlist*);
+unsigned list_srbt_search(srbt***, unsigned, unsigned, header);
+unsigned srbt_search(srbt*, unsigned, header);
+
+void do_list_srbt_search(srbt*** S, unsigned size, unsigned N, headerlist* H) {
+  printf("==================== SRBT Search ====================\n");
+  unsigned i;
+  for (i = 0; i < H->n; ++i) { printf("h[%d] = %s ---> %d\n", H->h[i].num, H->h[i].string, list_srbt_search(S, size, N, H->h[i])); }
+}
+
+unsigned list_srbt_search(srbt*** S, unsigned size, unsigned N, header h) {
+  unsigned i, m, candidate = N+1;
+  for (i = 0; i < size; ++i) {
+    printf("=== %d ===\n", i);
+    m = srbt_search(S[i][0], candidate, h);
+    if (m < candidate) { candidate = m; }
+  }
+  return candidate;
+}
+
+unsigned srbt_search(srbt* ptr, unsigned N, header h) {
+  srbt* t = ptr;
+  unsigned rn = N+1;
+
+  do {
+    if (0 != t->rule && t->rule < rn) { rn = t->rule; }
+    printf("t->var = %d\n", t->var);
+    if ('0' == h.string[t->var]) { t = t->left; }
+    else { t = t->right; }
+  } while (NULL != t);
+
+  return rn;
+}
+
 
 srbt*** mk_srbt_list(list_rulelist* RR, unsigned N) {
   list_rulelist_cell* p;

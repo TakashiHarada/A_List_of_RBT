@@ -21,6 +21,7 @@ int main(int argc, char** argv) {
 
 
   srbt*** S = mk_srbt_list(RR, R->size);
+  do_list_srbt_search(S, RR->size, R->size, H);
   free_srbt_list(S, RR->size, strlen(R->head->key->cond)-1);
 
   list_rulelist_clear(RR);
