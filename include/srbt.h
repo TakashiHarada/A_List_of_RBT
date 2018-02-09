@@ -31,6 +31,7 @@ unsigned get_start_point(char*, unsigned, unsigned*);
 void modify_tj(srbt**, unsigned, rule*, unsigned*);
 void srbt_print(unsigned, srbt*);
 void srbts_print(srbt**, unsigned);
+void list_srbt_print(srbt***, unsigned, unsigned);
 
 void free_srbt_list(srbt***, unsigned, unsigned);
 void free_srbts(srbt**, unsigned);
@@ -49,7 +50,7 @@ void do_list_srbt_search(srbt*** S, unsigned size, unsigned N, headerlist* H) {
 unsigned list_srbt_search(srbt*** S, unsigned size, unsigned N, header h) {
   unsigned i, m, candidate = N+1;
   for (i = 0; i < size; ++i) {
-    printf("=== %d ===\n", i);
+    /* printf("=== %d ===\n", i); */
     m = srbt_search(S[i][0], candidate, h);
     if (m < candidate) { candidate = m; }
   }
@@ -58,11 +59,11 @@ unsigned list_srbt_search(srbt*** S, unsigned size, unsigned N, header h) {
 
 unsigned srbt_search(srbt* ptr, unsigned N, header h) {
   srbt* t = ptr;
-  unsigned rn = N+1;
+  unsigned rn = N;
 
   do {
     if (0 != t->rule && t->rule < rn) { rn = t->rule; }
-    printf("t->var = %d\n", t->var);
+    /* printf("t->var = %d\n", t->var); */
     if ('0' == h.string[t->var]) { t = t->left; }
     else { t = t->right; }
   } while (NULL != t);
@@ -82,7 +83,6 @@ srbt*** mk_srbt_list(list_rulelist* RR, unsigned N) {
 srbt** mk_srbt(list_rule* R, unsigned N) {
   srbt** srbt = mk_backbone_rbt(R, N);
   const unsigned w = strlen(R->head->key->cond)-1;
-  
   int i;
   for(i = w-1; 1 <= i; i--){
     if(srbt[i-1]->left == NULL){
@@ -109,7 +109,6 @@ srbt** mk_srbt(list_rule* R, unsigned N) {
       if(srbt[i-1]->candidate_rule > srbt[i-1]->right->candidate_rule) { srbt[i-1]->candidate_rule = srbt[i-1]->right->candidate_rule; }
     }
   }
-    
   return srbt;
 }
 
@@ -157,10 +156,6 @@ srbt** mk_backbone_rbt(list_rule* R, unsigned N) {
 
   unsigned* sigma_i = (unsigned*)malloc(w*sizeof(unsigned));
   unsigned i; for (i = 0; i < w; ++i) { sigma_i[R->sigma[i]] = i; }
-  /* printf("w = %d, n = %d\n", w, n); */
-  /* printf("s  = %d", R->sigma[0]); for (i = 1; i < w; ++i) { printf(", %d", R->sigma[i]); } putchar('\n');  */
-  /* printf("si = %d", sigma_i[0]); for (i = 1; i < w; ++i) { printf(", %d", sigma_i[i]); } putchar('\n'); */
-  
   set_roots(rbt, w, N, sigma_i);
   
   list_rule_cell* p;
@@ -175,8 +170,9 @@ srbt** mk_backbone_rbt(list_rule* R, unsigned N) {
 
 /* modify a T[j] */
 void modify_tj(srbt** rbt, unsigned j, rule* r, unsigned* sigma) {
-  srbt* t = rbt[sigma[j]];
-  int trie_num = sigma[j];
+  srbt* t = rbt[j];
+  int trie_num = j;
+  
   /* if there is no rule on the T[j] 
       then the candidate rule number of the root on T[j] is a rule number of r */
   if (r->num < t->candidate_rule) { t->candidate_rule = r->num; }
@@ -185,10 +181,10 @@ void modify_tj(srbt** rbt, unsigned j, rule* r, unsigned* sigma) {
     /* if the node pointed by t has a rule then the rule r is redundant */
     if (t->rule != 0) { return ; }
     if ('0' == r->cond[sigma[j]]) {
-      if (NULL == t->left) { t->left = mk_srbt_node(sigma[j]+1,trie_num,r->num); }
+      if (NULL == t->left) { t->left = mk_srbt_node(sigma[j+1],trie_num,r->num); }
       t = t->left;
     } else {
-      if (NULL == t->right) { t->right = mk_srbt_node(sigma[j]+1,trie_num,r->num); }
+      if (NULL == t->right) { t->right = mk_srbt_node(sigma[j+1],trie_num,r->num); }
       t = t->right;
     }
   }
@@ -238,18 +234,21 @@ void free_srbt(unsigned i, srbt* ptr) {
   free(ptr);
 }
 
-void srbt_print(unsigned i, srbt* ptr){
+void srbt_print(unsigned i, srbt* ptr) {
   if(ptr == NULL || ptr->tn != i) { return ; }
-  //printf("{tn=%d, v=%d, r=%d, cr=%d ",ptr->tn,ptr->var,ptr->rule,ptr->candidate_rule);
-  printf("tn=%d, v=%d, r=%d, cr=%d\n",ptr->tn,ptr->var,ptr->rule,ptr->candidate_rule);
+  printf("tn=%d, v=%d, r=%d, cr=%d\n", ptr->tn, ptr->var, ptr->rule, ptr->candidate_rule);
   srbt_print(i, ptr->left);
   srbt_print(i, ptr->right);
-  //printf("}");
 }
 
 void srbts_print(srbt** srbt, unsigned w) {
   unsigned i;
-  for (i = 0; i < w; ++i) { printf("==================== SRBT[%d] ====================\n", i); srbt_print(i, srbt[i]); putchar('\n'); }
+  for (i = 0; i < w; ++i) { printf("=== SRBT[%d] ===\n", i); srbt_print(i, srbt[i]); putchar('\n'); }
+}
+
+void list_srbt_print(srbt*** S, unsigned size, unsigned w) {
+  unsigned i;
+  for (i = 0; i < size; ++i) { printf("===== SS[%d] =====\n", i); srbts_print(S[i], w); putchar('\n'); }
 }
 
 #endif
