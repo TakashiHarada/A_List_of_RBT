@@ -19,29 +19,34 @@ void set_C1Porder_to_rulelist(list_rule*);
 
 list_rulelist* list_rule_to_list_rulelist(list_rule* L) {
   if (NULL == L || 0 == L->size) { return NULL; }
-  list_rulelist* LL = (list_rulelist*)malloc(sizeof(list_rulelist));
+  list_rulelist* LL = (list_rulelist*)calloc(1, sizeof(list_rulelist));
   if (L->size < 3) { list_rulelist_insert(LL, L); return LL; }
 
   /* add the rul list containing the first and second rule of L to a list of rulelist LL */
   list_rule_cell* p;
   unsigned i;
-  list_rule* R = (list_rule*)malloc(sizeof(list_rule));
+  list_rule* R = (list_rule*)calloc(1, sizeof(list_rule));
   for (p = L->head, i = 0; i < 2; p = p->next, ++i) { list_rule_insert(R, p->key); }
+  /* printf("List Size = %d\n", R->size); */
   list_rulelist_insert(LL, R);
+  /* printf("List Size = %d\n", LL->last->key->size); */
   list_rule_clear(R);
 
   /* partition */
   list_rulelist_cell* q;
   for ( ; NULL != p; p = p->next) {
+    /* rule_print(p->key); */
     for (q = LL->last; NULL != q; q = q->prev) {
       list_rule_insert(q->key, p->key);
       if (list_rule_isC1P(q->key)) { break; }
       list_rule_remove_head(q->key);
     }
+    rule_print(p->key);
     if (NULL == q) {
       list_rule* S = mk_new_list_rule(p->key);
       list_rulelist_insert(LL, S);
     }
+    rule_print(p->key);
   }
 
   /* set order */
@@ -64,13 +69,13 @@ matrix* rulelist_to_matrix(list_rule* L) {
   list_rule_cell* p = L->head;
   const unsigned m = L->size;
   const unsigned n = strlen(p->key->cond)-1;
-  matrix* M = (matrix*)malloc(sizeof(matrix));
+  matrix* M = (matrix*)calloc(1, sizeof(matrix));
   M->m = m;
   M->n = n;
-  /* printf("M->m = %d, M->n = %d\n", m, n); */
-  M->b = (char**)malloc(m*sizeof(char*));
+  /* printf("L->size = %d, M->m = %d, M->n = %d\n", L->size, m, n); */
+  M->b = (char**)calloc(m, sizeof(char*));
   unsigned i, j;
-  for (i = 0; i < m; ++i) { M->b[i] = (char*)malloc(n*sizeof(char)); }
+  for (i = 0; i < m; ++i) { M->b[i] = (char*)calloc(n, sizeof(char)); }
 
   for (i = 0; NULL != p; p = p->next, ++i)
     for (j = 0; j < n; ++j)

@@ -288,7 +288,7 @@ void get_w_sub(bool* flag, unsigned* w, unsigned* f_sigma, unsigned_node* p, uns
 }
 
 unsigned get_w(unsigned* f_sigma, set_unsigned* S) {
-  unsigned w;
+  unsigned w = 0;
   bool flag = false;
   get_w_sub(&flag, &w, f_sigma, S->root, S->nil);
   return w;
@@ -306,7 +306,7 @@ void get_beta_sub(bool* flag, unsigned* beta, unsigned* sigma_i, unsigned_node* 
 /* β = max{ j | σ(J) ∈ S } */
 unsigned get_beta(unsigned* sigma_i, set_unsigned* S) {
   if (NULL == S) { fprintf(stderr, "ERROR: in get_alpha, S is null!!\n"); exit(1); }
-  unsigned beta;
+  unsigned beta = 0;
   bool flag = false;
   get_beta_sub(&flag, &beta, sigma_i, S->root, S->nil);
   return beta;
@@ -324,7 +324,7 @@ void get_alpha_sub(bool* flag, unsigned* alpha, unsigned* sigma_i, unsigned_node
 /* α = min{ j | σ(J) ∈ S } */
 unsigned get_alpha(unsigned* sigma_i, set_unsigned* S) {
   if (NULL == S) { fprintf(stderr, "ERROR: in get_alpha, S is null!!\n"); exit(1); }
-  unsigned alpha;
+  unsigned alpha = 0;
   bool flag = false;
   get_alpha_sub(&flag, &alpha, sigma_i, S->root, S->nil);
   return alpha;

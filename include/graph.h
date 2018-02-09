@@ -161,7 +161,8 @@ matrix* read_matrix(char* filename) {
   size_t len = 0;
   unsigned m = 0;
   unsigned n;
-  if (-1 != getline(&line, &len, fp)) { ++m, n = strlen(line)-1; }
+  if (-1 == getline(&line, &len, fp)) { exit(1); }
+  ++m, n = strlen(line)-1;
   while (-1 != getline(&line, &len, fp)) { ++m; }
 
   matrix* M = (matrix*)calloc(1, sizeof(matrix));

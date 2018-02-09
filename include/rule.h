@@ -109,7 +109,7 @@ list_rule_cell* list_rule_search(list_rule* L, rule* r) {
 }
 
 void list_rule_insert(list_rule* L, rule* r) {
-  list_rule_cell* new = (list_rule_cell*)malloc(sizeof(list_rule_cell));
+  list_rule_cell* new = (list_rule_cell*)calloc(1, sizeof(list_rule_cell));
   L->size = L->size + 1;
   /* const unsigned l = strlen(r->cond); */
   /* new->key = (rule*)malloc(sizeof(rule)); */
@@ -195,6 +195,7 @@ list_rule* list_rule_copy(list_rule* L) {
   list_rule_cell* p;
   for (p = L->last; NULL != p; p = p->prev)
     list_rule_insert(L2, p->key);
+  L2->size = L->size;
 
   return L2;
 }
