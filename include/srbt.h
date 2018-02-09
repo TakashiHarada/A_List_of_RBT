@@ -28,7 +28,7 @@ void sub_mk_srbt(srbt*, srbt*);
 void set_roots(srbt**, unsigned, unsigned, unsigned*);
 srbt* mk_srbt_node(int, unsigned, unsigned);
 unsigned get_start_point(char*, unsigned, unsigned*);
-void modify_tj(srbt**, unsigned, rule*, unsigned*);
+void modify_tj(srbt**, unsigned, rule*, unsigned*, unsigned);
 void srbt_print(unsigned, srbt*);
 void srbts_print(srbt**, unsigned);
 void list_srbt_print(srbt***, unsigned, unsigned);
@@ -83,6 +83,7 @@ srbt*** mk_srbt_list(list_rulelist* RR, unsigned N) {
 srbt** mk_srbt(list_rule* R, unsigned N) {
   srbt** srbt = mk_backbone_rbt(R, N);
   const unsigned w = strlen(R->head->key->cond)-1;
+    
   int i;
   for(i = w-1; 1 <= i; i--){
     if(srbt[i-1]->left == NULL){
@@ -152,16 +153,16 @@ void sub_mk_srbt(srbt* y_srbt, srbt* o_srbt) {
 srbt** mk_backbone_rbt(list_rule* R, unsigned N) {
   const unsigned w = strlen(R->head->key->cond)-1;
   /* const unsigned n = R->size; */
-  srbt** rbt = (srbt**)malloc(w*sizeof(srbt*));
+  srbt** rbt = (srbt**)calloc(w, sizeof(srbt*));
 
-  unsigned* sigma_i = (unsigned*)malloc(w*sizeof(unsigned));
+  unsigned* sigma_i = (unsigned*)calloc(w, sizeof(unsigned));
   unsigned i; for (i = 0; i < w; ++i) { sigma_i[R->sigma[i]] = i; }
   set_roots(rbt, w, N, sigma_i);
   
   list_rule_cell* p;
   for (p = R->head; NULL != p; p = p->next) {
     unsigned j = get_start_point(p->key->cond, w, sigma_i);
-    modify_tj(rbt, j, p->key, sigma_i);
+    modify_tj(rbt, j, p->key, sigma_i, w);
   }
 
   free(sigma_i);
@@ -169,15 +170,13 @@ srbt** mk_backbone_rbt(list_rule* R, unsigned N) {
 }
 
 /* modify a T[j] */
-void modify_tj(srbt** rbt, unsigned j, rule* r, unsigned* sigma) {
+void modify_tj(srbt** rbt, unsigned j, rule* r, unsigned* sigma, unsigned w) {
   srbt* t = rbt[j];
   int trie_num = j;
-  
   /* if there is no rule on the T[j] 
       then the candidate rule number of the root on T[j] is a rule number of r */
   if (r->num < t->candidate_rule) { t->candidate_rule = r->num; }
-
-  for ( ; '*' != r->cond[sigma[j]] && '\0' != r->cond[sigma[j]]; ++j) {
+  for ( ; '*' != r->cond[sigma[j]] && '\0' != r->cond[sigma[j]] && j < w; ++j) {
     /* if the node pointed by t has a rule then the rule r is redundant */
     if (t->rule != 0) { return ; }
     if ('0' == r->cond[sigma[j]]) {
@@ -206,7 +205,7 @@ void set_roots(srbt** rbt, unsigned w, unsigned n, unsigned* sigma) {
 }
 
 srbt* mk_srbt_node(int var, unsigned tn, unsigned candidate_rule) {
-  srbt* new = (srbt*)malloc(sizeof(srbt));
+  srbt* new = (srbt*)calloc(1, sizeof(srbt));
   new->var = var;
   new->tn = tn;
   new->rule = 0;

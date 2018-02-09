@@ -252,7 +252,7 @@ list_rule* read_rule_list(char* rule_file_name) {
     r->num = i;
     r->cond = (char*)calloc(strlen(line), sizeof(char));
     strcpy(r->cond, line);
-    r->cond[strlen(line)] = '\0';
+    r->cond[strlen(line)-1] = '\0';
     list_rule_insert(rulelist, r);
   }
   fclose(fp);
