@@ -17,28 +17,32 @@ struct SRBT {
 };
 typedef struct SRBT srbt;
 
+srbt*** mk_srbt_list(list_rulelist*, unsigned);
 srbt** mk_srbt(list_rule*, unsigned);
 srbt** mk_backbone_rbt(list_rule*, unsigned);
 void sub_mk_srbt(srbt*, srbt*);
 void set_roots(srbt**, unsigned, unsigned, unsigned*);
 srbt* mk_srbt_node(int, unsigned, unsigned);
-
 unsigned get_start_point(char*, unsigned, unsigned*);
 void modify_tj(srbt**, unsigned, rule*, unsigned*);
-
 void srbt_print(unsigned, srbt*);
 void srbts_print(srbt**, unsigned);
-/* void post_order(srbt*, unsigned, char*); */
 
+void free_srbt_list(srbt***, unsigned, unsigned);
 void free_srbts(srbt**, unsigned);
 void free_srbt(unsigned, srbt*);
 
+srbt*** mk_srbt_list(list_rulelist* RR, unsigned N) {
+  list_rulelist_cell* p;
+  srbt*** S = (srbt***)calloc(RR->size, sizeof(srbt**));
+  unsigned i;
+  for (i = 0, p = RR->head; NULL != p; p = p->next, ++i) { S[i] = mk_srbt(p->key, N); }
+  return S;
+}
 
 srbt** mk_srbt(list_rule* R, unsigned N) {
   srbt** srbt = mk_backbone_rbt(R, N);
-
   const unsigned w = strlen(R->head->key->cond)-1;
-  /* const unsigned n = R->size; */
   
   int i;
   for(i = w-1; 1 <= i; i--){
@@ -175,6 +179,11 @@ srbt* mk_srbt_node(int var, unsigned tn, unsigned candidate_rule) {
   new->left = new->right = NULL;
   
   return new;
+}
+
+void free_srbt_list(srbt*** s, unsigned size, unsigned w) {
+  unsigned i, j;
+  for (i = 0; i < size; ++i) { for (j = 0; j < w; ++j) { free_srbt(j, s[i][j]); } }
 }
 
 void free_srbts(srbt** srbt, unsigned w) {
