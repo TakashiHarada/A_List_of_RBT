@@ -13,14 +13,17 @@ int main(int argc, char** argv) {
   list_rule* R = read_rule_list(argv[1]);
   /* list_rule_print(R); */
 
-	struct timespec l_start, l_end, srbt_start, srbt_end;
-	long l_nsec, srbt_nsec;
+	struct timespec s, e;
 
-	clock_getres(CLOCK_REALTIME, &l_start);
+	clock_gettime(CLOCK_REALTIME, &s);
   do_linear_search(R, H);
-	clock_getres(CLOCK_REALTIME, &l_end);
-	srbt_nsec = l_end.tv_nsec - l_start.tv_nsec;
-	printf("Linear Seach Time = %09ld\n", srbt_nsec);
+	clock_gettime(CLOCK_REALTIME, &e);
+
+	if (e.tv_nsec < s.tv_nsec) {
+		printf("Linear Seach Time = %10ld.%09ld\n", e.tv_sec - s.tv_sec - 1, e.tv_nsec + 1000000000 - s.tv_nsec);
+	} else {
+		printf("Linear Seach Time = %10ld.%09ld\n", e.tv_sec - s.tv_sec, e.tv_nsec - s.tv_nsec);
+	}
   
 	list_rulelist* RR = list_rule_to_list_rulelist(R);
 
@@ -30,11 +33,17 @@ int main(int argc, char** argv) {
   srbt*** S = mk_srbt_list(RR, R->size);
   /* list_srbt_print(S, RR->size, strlen(R->head->key->cond)-1); */
   
-	clock_getres(CLOCK_REALTIME, &srbt_start);
+	clock_gettime(CLOCK_REALTIME, &s);
   do_list_srbt_search(S, RR->size, R->size, H);
-	clock_getres(CLOCK_REALTIME, &srbt_end);
-	l_nsec = srbt_end.tv_nsec - srbt_start.tv_nsec;
-	printf("Linear Seach Time = %09ld\n", l_nsec);
+	clock_gettime(CLOCK_REALTIME, &e);
+
+	if (e.tv_nsec < s.tv_nsec) {
+		printf("LSRBT Seach Time  = %10ld.%09ld\n", e.tv_sec - s.tv_sec - 1, e.tv_nsec + 1000000000 - s.tv_nsec);
+	} else {
+		printf("LSRBT Seach Time  = %10ld.%09ld\n", e.tv_sec - s.tv_sec, e.tv_nsec - s.tv_nsec);
+	}
+	printf("LSRBT size = %d\n", RR->size);
+
   /* free_srbt_list(S, RR->size, strlen(R->head->key->cond)-1); */
 
 	/*
