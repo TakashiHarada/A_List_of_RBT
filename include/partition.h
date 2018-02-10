@@ -35,13 +35,13 @@ list_rulelist* list_rule_to_list_rulelist(list_rule* L) {
   /* partition */
   list_rulelist_cell* q;
   for ( ; NULL != p; p = p->next) {
-    /* rule_print(p->key); */
+     // printf("w = %u, ", strlen(p->key->cond)); rule_print(p->key); putchar('\n');
     for (q = LL->last; NULL != q; q = q->prev) {
       list_rule_insert(q->key, p->key);
       if (list_rule_isC1P(q->key)) { break; }
       list_rule_remove_head(q->key);
     }
-    /* rule_print(p->key); */
+    // rule_print(p->key); putchar('\n');
     if (NULL == q) {
       list_rule* S = mk_new_list_rule(p->key);
       list_rulelist_insert(LL, S);

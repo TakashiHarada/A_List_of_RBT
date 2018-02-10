@@ -26,7 +26,6 @@ int main(int argc, char** argv) {
 	}
   
 	list_rulelist* RR = list_rule_to_list_rulelist(R);
-
   /* list_rulelist_print(RR); */
   /* list_rulelist_print2(RR); */
 
@@ -44,13 +43,13 @@ int main(int argc, char** argv) {
 	}
 	printf("LSRBT size = %d\n", RR->size);
 
-  /* free_srbt_list(S, RR->size, strlen(R->head->key->cond)-1); */
-
 	/*
+  free_srbt_list(S, RR->size, strlen(R->head->key->cond)-1);
+
   list_rulelist_clear(RR);
   list_rule_clear(R);
   free_header_list(H);
-  */
+	*/
 
   /* c_rulelist* c_rulelist = read_class_bench_rule_list(argv[1]); */
   /* c_rulelist_print(c_rulelist); */

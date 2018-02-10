@@ -49,10 +49,11 @@ bool does_match_header(rule* r, header h) {
 }
 
 rule* rule_copy(rule* r) {
-  rule* copy = (rule*)malloc(sizeof(rule));
+  rule* copy = (rule*)calloc(1, sizeof(rule));
   copy->num = r->num;
-  copy->cond = (char*)malloc(strlen(r->cond)*sizeof(char));
+  copy->cond = (char*)calloc(strlen(r->cond)+1, sizeof(char));
   strcpy(copy->cond, r->cond);
+	copy->cond[strlen(r->cond)] = '\0';
   return copy;
 }
 
@@ -251,9 +252,11 @@ list_rule* read_rule_list(char* rule_file_name) {
   for (i = 1; -1 != (read = getline(&line, &len, fp)); ++i) {
     rule* r = (rule*)calloc(1, sizeof(rule));
     r->num = i;
-    r->cond = (char*)calloc(strlen(line), sizeof(char));
+		unsigned w = strlen(line);
+    r->cond = (char*)calloc(w, sizeof(char));
     strcpy(r->cond, line);
-    r->cond[strlen(line)-1] = '\0';
+    r->cond[w-1] = '\0';
+		// printf("s = %s, w = %d\n", r->cond, w);
     list_rule_insert(rulelist, r);
   }
   fclose(fp);
