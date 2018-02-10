@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
 
 #ifndef __TANAKALAB_SET_H__
 #include <set.h>

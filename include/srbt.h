@@ -42,9 +42,10 @@ unsigned list_srbt_search(srbt***, unsigned, unsigned, header);
 unsigned srbt_search(srbt*, unsigned, header);
 
 void do_list_srbt_search(srbt*** S, unsigned size, unsigned N, headerlist* H) {
-  printf("==================== SRBT Search ====================\n");
+  // printf("==================== SRBT Search ====================\n");
   unsigned i;
-  for (i = 0; i < H->n; ++i) { printf("h[%d] = %s ---> %d\n", H->h[i].num, H->h[i].string, list_srbt_search(S, size, N, H->h[i])); }
+  // for (i = 0; i < H->n; ++i) { printf("h[%d] = %s ---> %d\n", H->h[i].num, H->h[i].string, list_srbt_search(S, size, N, H->h[i])); }
+  for (i = 0; i < H->n; ++i) { list_srbt_search(S, size, N, H->h[i]); }
 }
 
 unsigned list_srbt_search(srbt*** S, unsigned size, unsigned N, header h) {
